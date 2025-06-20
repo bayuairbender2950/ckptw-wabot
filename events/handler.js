@@ -114,7 +114,7 @@ module.exports = (bot) => {
             id,
             jid: `${id}@s.whatsapp.net`,
             readyAt: bot.readyAt,
-            groupLink: await bot.core.groupInviteCode(config.bot.groupJid).then(code => `https://chat.whatsapp.com/${code}`).catch(() => "https://chat.whatsapp.com/FxEYZl2UyzAEI2yhaH34Ye")
+            groupLink: await bot.core.groupInviteCode(config.bot.groupJid).then(code => `https://chat.whatsapp.com/${code}`).catch(() => "https://chat.whatsapp.com/")
         };
     });
 

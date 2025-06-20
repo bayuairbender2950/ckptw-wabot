@@ -3,7 +3,7 @@ const {
 } = require("@itsreimau/ckptw-mod");
 
 module.exports = {
-    name: "tqto",
+    name: "credits",
     aliases: ["contrib", "contribs", "contributor", "contributors", "thanksto"],
     category: "information",
     code: async (ctx) => {

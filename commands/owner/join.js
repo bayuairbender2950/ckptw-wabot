@@ -13,8 +13,7 @@ module.exports = {
         const url = ctx.args[0] || null;
 
         if (!url) return await ctx.reply(
-            `${quote(tools.msg.generateInstruction(["send"], ["text"]))}\n` +
-            quote(tools.msg.generateCmdExample(ctx.used, config.bot.groupLink))
+            `${quote(tools.msg.generateInstruction(["send"], ["text"]))}\n`
         );
 
         const isUrl = await tools.cmd.isUrl(url);
