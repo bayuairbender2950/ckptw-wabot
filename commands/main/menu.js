@@ -44,7 +44,6 @@ module.exports = {
                 `${quote("@abiem/bubuhan-baik - Fork of @itsreimau/ckptw-mod")}\n` +
                 `${quote(`Last Restart: ${moment.tz(config.system.timeZone).format("dddd, DD MMMM YYYY HH:mm:ss")}`)}\n` +
                 "\n" +
-                `${italic("Jangan lupa berdonasi agar bot tetap online!")}\n` +
                 `${config.msg.readmore}\n`;
 
             for (const category of Object.keys(tag)) {
