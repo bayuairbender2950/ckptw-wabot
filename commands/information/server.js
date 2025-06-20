@@ -41,8 +41,8 @@ module.exports = {
                 `${quote(`PID: ${process.pid}`)}\n` +
                 `${quote("─────")}\n` +
                 `${quote(`Bot Uptime: ${config.bot.uptime}`)}\n` +
-                `${quote(`Database: ${config.bot.dbSize} (Simpl.DB - JSON)`)}\n` +
-                `${quote("Library: @itsreimau/ckptw-mod (Fork of @mengkodingan/ckptw)")}\n` +
+                `${quote(`Database: ${config.bot.dbSize} (MongoDB)`)}\n` +
+                `${quote("@abiem/bubuhan-baik - Fork of @itsreimau/ckptw-mod")}\n` +
                 "\n" +
                 config.msg.footer
             );

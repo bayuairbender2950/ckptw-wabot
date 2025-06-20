@@ -78,7 +78,7 @@ function fakeMetaAiQuotedText(text) {
 
     const quoted = {
         key: {
-            participant: "13135550002@s.whatsapp.net",
+            participant: "0@s.whatsapp.net",
             remoteJid: "status@broadcast"
         },
         message: {

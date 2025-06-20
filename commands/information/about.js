@@ -1,7 +1,7 @@
 const {
     quote
 } = require("@itsreimau/ckptw-mod");
-
+const moment = require("moment-timezone");
 module.exports = {
     name: "about",
     aliases: ["bot", "infobot"],
@@ -18,8 +18,9 @@ module.exports = {
                     `${quote(`Owner: ${config.owner.name}`)}\n` +
                     `${quote(`Mode: ${tools.msg.ucwords(botDb?.mode || "public")}`)}\n` +
                     `${quote(`Bot Uptime: ${config.bot.uptime}`)}\n` +
-                    `${quote(`Database: ${config.bot.dbSize} (Simpl.DB - JSON)`)}\n` +
-                    `${quote("Library: @itsreimau/ckptw-mod (Fork of @mengkodingan/ckptw)")}\n` +
+                    `${quote(`Database: ${config.bot.dbSize} (MongoDB)`)}\n` +
+                    `${quote("@abiem/bubuhan-baik - Fork of @itsreimau/ckptw-mod")}\n` +
+                    `${quote(`Last Restart: ${moment.tz(config.system.timeZone).format("dddd, DD MMMM YYYY HH:mm:ss")}`)}\n` +
                     "\n" +
                     config.msg.footer,
                 contextInfo: {

@@ -40,8 +40,9 @@ module.exports = {
                 `${quote(`Waktu: ${moment.tz(config.system.timeZone).format("HH.mm.ss")}`)}\n` +
                 "\n" +
                 `${quote(`Bot Uptime: ${config.bot.uptime}`)}\n` +
-                `${quote(`Database: ${config.bot.dbSize} (Simpl.DB - JSON)`)}\n` +
-                `${quote("Library: @itsreimau/ckptw-mod (Fork of @mengkodingan/ckptw)")}\n` +
+                `${quote(`Database: ${config.bot.dbSize} (MongoDB)`)}\n` +
+                `${quote("@abiem/bubuhan-baik - Fork of @itsreimau/ckptw-mod")}\n` +
+                `${quote(`Last Restart: ${moment.tz(config.system.timeZone).format("dddd, DD MMMM YYYY HH:mm:ss")}`)}\n` +
                 "\n" +
                 `${italic("Jangan lupa berdonasi agar bot tetap online!")}\n` +
                 `${config.msg.readmore}\n`;
@@ -60,11 +61,11 @@ module.exports = {
 
                     categoryCmds.forEach(cmd => {
                         let permissionsText = "";
-                        if (cmd.permissions.coin) permissionsText += "ⓒ";
-                        if (cmd.permissions.group) permissionsText += "Ⓖ";
-                        if (cmd.permissions.owner) permissionsText += "Ⓞ";
-                        if (cmd.permissions.premium) permissionsText += "Ⓟ";
-                        if (cmd.permissions.private) permissionsText += "ⓟ";
+                        if (cmd.permissions.coin) permissionsText += "- ⓒ Coin";
+                        if (cmd.permissions.group) permissionsText += " - Ⓖ Group only";
+                        if (cmd.permissions.owner) permissionsText += " - Ⓞ Owner only";
+                        if (cmd.permissions.premium) permissionsText += " - Ⓟ Premium only";
+                        if (cmd.permissions.private) permissionsText += " - ⓟ Private";
 
                         text += quote(monospace(`${ctx.used.prefix + cmd.name} ${permissionsText}`));
                         text += "\n";
@@ -80,7 +81,7 @@ module.exports = {
                 text,
                 contextInfo: {
                     mentionedJid: [ctx.sender.jid],
-                    isForwarded: true,
+                    isForwarded: false,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: config.bot.newsletterJid,
                         newsletterName: config.bot.name
@@ -98,7 +99,7 @@ module.exports = {
             });
             return await ctx.sendMessage(ctx.id, {
                 audio: {
-                    url: "https://www.tikwm.com/video/music/7472130814805822726.mp3" // Dapat diubah sesuai keinginan (Ada yg request, tambah lagu di menu nya)
+                    url: "https://archive.org/download/TripleBaka_944/TripleBaka.mp3" // Dapat diubah sesuai keinginan (Ada yg request, tambah lagu di menu nya)
                 },
                 mimetype: mime.lookup("mp3"),
                 ptt: true,
@@ -108,7 +109,7 @@ module.exports = {
                         title: config.bot.name,
                         body: config.bot.version,
                         mediaType: 1,
-                        thumbnailUrl: "https://i.ytimg.com/vi/jfKfPfyJRdk/maxresdefault.jpg",
+                        thumbnailUrl: "https://i.ytimg.com/vi/HhN4wdpbPrg/hqdefault.jpg",
                         renderLargerThumbnail: true
                     }
                 }
