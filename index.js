@@ -10,6 +10,7 @@ const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const SimplDB = require("simpl.db");
+const { handleWebhook } = require('./webhook');
 
 // Inisialisasi Consolefy untuk logging
 const c = new Consolefy({
@@ -49,12 +50,21 @@ CFonts.say(
     }
 );
 
-// Jalankan server jika diaktifkan dalam konfigurasi
 if (config.system.useServer) {
-    const {
-        port
-    } = config.system;
-    http.createServer(res => res.end(`${pkg.name} berjalan di port ${port}`)).listen(port, () => c.success(`${pkg.name} runs on port ${port}`));
+    const { port } = config.system;
+    const { bot } = require("./main.js");
+
+    http.createServer(async (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        if (req.url.startsWith('/webhook')) {
+            const result = await handleWebhook(req, req.url, bot);
+            res.writeHead(result.status);
+            res.end(JSON.stringify(result));
+            return;
+        }
+        res.writeHead(200);
+        res.end(JSON.stringify({ status: 'ok', message: `${pkg.name} berjalan di port ${port}` }));
+    }).listen(port, () => c.success(`${pkg.name} runs on port ${port}`));
 }
 
 require("./main.js"); // Jalankan modul utama

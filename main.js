@@ -51,4 +51,6 @@ middleware(bot);
 const cmd = new CommandHandler(bot, path.resolve(__dirname, "commands"));
 cmd.load();
 
+module.exports = { bot };
+
 bot.launch().catch(error => consolefy.error(`Error: ${util.format(error)}`)); // Luncurkan bot
