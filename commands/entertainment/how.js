@@ -25,9 +25,17 @@ module.exports = {
         }
 
         try {
+            const selfWords = /\b(gw|gue|gua|ane|wa|beta|abdi|daku|kami|kita|saya|aku\w*|me|i|my|mine|myself|aku|saya|abdi|beta|daku|gua|gue|ane|wa|kami|kita)\b/i;
+            let processedInput = input;
+            if (selfWords.test(input)) {
+                const match = (ctx.sender?.jid || "").match(/\d+/);
+                const mention = match ? "@" + match[0] : "@user";
+                processedInput = input.replace(selfWords, mention);
+            }
+
             const randomNumber = Math.floor(Math.random() * 100);
 
-            return await ctx.reply(quote(`${input} itu ${randomNumber}% ${(ctx.used.command.replace("how", "")).toLowerCase()}.`));
+            return await ctx.reply(quote(`${processedInput} itu ${randomNumber}% ${(ctx.used.command.replace("how", "")).toLowerCase()}.`));
         } catch (error) {
             return await tools.cmd.handleError(ctx, error);
         }

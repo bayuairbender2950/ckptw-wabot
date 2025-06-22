@@ -23,7 +23,7 @@ module.exports = {
                 timeout: 60000,
                 answer: result.jawaban.toLowerCase()
             };
-
+         //   console.log(`[NYONTEK LU > TEBAK GAME] Jawaban: ${game.answer}`);
             session.set(ctx.id, true);
 
             await ctx.reply({

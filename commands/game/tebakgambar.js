@@ -24,6 +24,9 @@ module.exports = {
                 answer: result.jawaban.toLowerCase()
             };
 
+            // Log jawaban ke console
+          //  console.log(`[NYONTEK LU > TEBAK GAMBAR] Jawaban: ${game.answer}`);
+
             session.set(ctx.id, true);
 
             await ctx.reply({
