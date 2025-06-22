@@ -67,4 +67,4 @@ if (config.system.useServer) {
     }).listen(port, () => c.success(`${pkg.name} runs on port ${port}`));
 }
 
-require("./main.js"); // Jalankan modul utama
+require("./main.js"); // Jalankan modul utama.

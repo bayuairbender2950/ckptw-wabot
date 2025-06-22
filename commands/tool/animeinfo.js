@@ -19,11 +19,10 @@ module.exports = {
         );
 
         try {
-            const apiUrl = tools.api.createUrl("https://api.jikan.moe", "/v4/anime", {
-                q: input
-            });
-            const result = (await axios.get(apiUrl)).data.data[0];
-
+            const apiUrl = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(input)}`;
+            const result = (await axios.get(apiUrl, { timeout: 10000 })).data.data[0];
+            if (!result) return await ctx.reply("Anime tidak ditemukan.");
+        
             return await ctx.reply(
                 `${quote(`Judul: ${result.title}`)}\n` +
                 `${quote(`Judul (Inggris): ${result.title_english}`)}\n` +
