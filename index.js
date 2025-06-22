@@ -10,7 +10,8 @@ const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const SimplDB = require("simpl.db");
-const { handleWebhook } = require('./webhook');
+const { handleWebhook } = require('./tools/webhook.js');
+require("./tools/hotreload.js"); 
 
 // Inisialisasi Consolefy untuk logging
 const c = new Consolefy({
