@@ -1,4 +1,5 @@
 const mime = require("mime-types");
+const axios = require("axios");
 
 module.exports = {
     name: "loli",
@@ -8,13 +9,13 @@ module.exports = {
     },
     code: async (ctx) => {
         try {
-            const result = tools.api.createUrl("archive", "/api/random/loli");
+            const imageUrl = "https://i.imgflip.com/4drxpt.jpg";
+            const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+            const buffer = Buffer.from(response.data, "binary");
 
             return await ctx.reply({
-                image: {
-                    url: result
-                },
-                mimetype: mime.lookup("png")
+                image: buffer,
+                mimetype: mime.lookup("jpg")
             });
         } catch (error) {
             return await tools.cmd.handleError(ctx, error, true);
