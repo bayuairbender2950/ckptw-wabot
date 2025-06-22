@@ -74,7 +74,7 @@ module.exports = (bot) => {
             if (config.system.autoTypingOnCmd) await ctx.simulateTyping();
         };
 
-        // Pengecekan kondisi pengguna
+        // Pengecekan kondisi restrictions
         const restrictions = [{
                 key: "banned",
                 condition: userDb?.banned,
@@ -92,6 +92,12 @@ module.exports = (bot) => {
                 condition: config.system.requireBotGroupMembership && ctx.used.command !== "botgroup" && !isOwner && !userDb?.premium && !(ctx.group(config.bot.groupJid)).members().some((member) => ctx.getId(member.id) === senderJid),
                 msg: config.msg.botGroupMembership,
                 reaction: "🚫"
+            },
+            {
+                key: "requireGroupSewa",
+                condition: config.system.requireGroupSewa && isGroup && groupDb?.sewa !== true && !isOwner,
+                msg: config.msg.groupSewa,
+                reaction: "🔒"
             },
             {
                 key: "gamerestrict",
@@ -126,7 +132,7 @@ module.exports = (bot) => {
             }
         }
 
-        // Pengecekan kondisi perizinan
+        // Pengecekan kondisi permissions
         const command = [...ctx.bot.cmd.values()].find(cmd => [cmd.name, ...(cmd.aliases || [])].includes(ctx.used.command));
         if (!command) return await next();
         const {

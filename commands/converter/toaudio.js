@@ -23,10 +23,10 @@ module.exports = {
         try {
             const buffer = await ctx.quoted.media.toBuffer()
             const uploadUrl = await tools.cmd.upload(buffer, "video");
-            const apiUrl = tools.api.createUrl("http://vid2aud.hofeda4501.serv00.net", "/api/convert", {
+            const apiUrl = tools.api.createUrl("http://api.hofeda4501.serv00.net", "/converter/toaudio", {
                 url: uploadUrl
             });
-            const result = (await axios.get(apiUrl)).data.result;
+            const result = Buffer.from((await axios.get(apiUrl)).data.result.audio, "base64");
 
             return await ctx.reply({
                 audio: {

@@ -2,10 +2,10 @@ const {
     quote
 } = require("@itsreimau/ckptw-mod");
 const axios = require("axios");
+const mime = require("mime-types");
 
 module.exports = {
-    name: "imagescan",
-    aliases: ["imgscan"],
+    name: "retouch",
     category: "ai-misc",
     permissions: {
         coin: 10
@@ -22,12 +22,17 @@ module.exports = {
         try {
             const buffer = await ctx.msg.media.toBuffer() || await ctx.quoted.media.toBuffer();
             const uploadUrl = await tools.cmd.upload(buffer, "image");
-            const apiUrl = tools.api.createUrl("davidcyril", "/imgscan", {
-                url: uploadUrl
+            const apiUrl = tools.api.createUrl("zell", "/ai/retouch", {
+                imageUrl: uploadUrl
             });
             const result = (await axios.get(apiUrl)).data.result;
 
-            return await ctx.reply(result);
+            return await ctx.reply({
+                image: {
+                    url: result
+                },
+                mimetype: mime.lookup("jpeg")
+            });
         } catch (error) {
             return await tools.cmd.handleError(ctx, error, true);
         }

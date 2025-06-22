@@ -4,8 +4,8 @@ const {
 const mime = require("mime-types");
 
 module.exports = {
-    name: "fluxpro",
-    aliases: ["fluxp"],
+    name: "text2anime",
+    aliases: ["texttoanime"],
     category: "ai-image",
     permissions: {
         coin: 10
@@ -20,15 +20,16 @@ module.exports = {
         );
 
         try {
-            const result = tools.api.createUrl("davidcyril", "/fluxpro", {
-                prompt: input
+            const result = tools.api.createUrl("nekorinn", "/ai-img/text2anime", {
+                text: input,
+                ratio: "1:1"
             });
 
             return await ctx.reply({
                 image: {
                     url: result
                 },
-                mimetype: mime.lookup("jpeg"),
+                mimetype: mime.lookup("jpg"),
                 caption: `${quote(`Prompt: ${input}`)}\n` +
                     "\n" +
                     config.msg.footer

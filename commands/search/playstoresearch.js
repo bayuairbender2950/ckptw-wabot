@@ -19,13 +19,13 @@ module.exports = {
         );
 
         try {
-            const apiUrl = tools.api.createUrl("skyzopedia", "/search/playstore", {
+            const apiUrl = tools.api.createUrl("bk9", "/search/playstore2", {
                 q: input
             });
-            const result = (await axios.get(apiUrl)).data.result;
+            const result = (await axios.get(apiUrl)).data.BK9;
 
             const resultText = result.map(r =>
-                `${quote(`Nama: ${r.nama}`)}\n` +
+                `${quote(`Nama: ${r.name}`)}\n` +
                 `${quote(`Pengembang: ${r.developer}`)}\n` +
                 `${quote(`Rating: ${r.rate2}`)}\n` +
                 `${quote(`URL: ${r.link}`)}`
@@ -34,7 +34,7 @@ module.exports = {
                 `${quote("─────")}\n`
             );
             return await ctx.reply(
-                `${resultText}\n` +
+                `${resultText || config.msg.notFound}\n` +
                 "\n" +
                 config.msg.footer
             );

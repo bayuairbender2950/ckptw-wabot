@@ -5,7 +5,7 @@ const mime = require("mime-types");
 
 module.exports = {
     name: "screenshot",
-    aliases: ["ss", "sspc", "ssweb"],
+    aliases: ["ss", "sshp", "sspc", "sstab", "ssweb"],
     category: "tool",
     permissions: {
         coin: 10
@@ -15,14 +15,18 @@ module.exports = {
 
         if (!url) return await ctx.reply(
             `${quote(tools.msg.generateInstruction(["send"], ["text"]))}\n` +
-            quote(tools.msg.generateCmdExample(ctx.used, "https://itsreimau.is-a.dev/"))
+            quote(tools.msg.generateCmdExample(ctx.used, "https://itsreimau.is-a.dev"))
         );
 
         const isUrl = await tools.cmd.isUrl(url);
         if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
         try {
-            const result = tools.api.createUrl("diibot", "/api/tools/sspc", {
+            let endpoint = "/api/tools/sspc";
+            if (ctx.used.command == "sshp") endpoint = "/api/tools/sshp";
+            if (ctx.used.command == "sstab") endpoint = "/api/tools/sstab";
+
+            const result = tools.api.createUrl("diibot", endpoint, {
                 url
             });
 

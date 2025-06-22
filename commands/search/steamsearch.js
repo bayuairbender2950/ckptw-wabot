@@ -19,7 +19,7 @@ module.exports = {
         );
 
         try {
-            const apiUrl = tools.api.createUrl("bk9", "/search/stream", {
+            const apiUrl = tools.api.createUrl("bk9", "/search/steam", {
                 q: input
             });
             const result = (await axios.get(apiUrl)).data.BK9;
@@ -32,7 +32,7 @@ module.exports = {
                 `${quote("─────")}\n`
             );
             return await ctx.reply(
-                `${resultText}\n` +
+                `${resultText || config.msg.notFound}\n` +
                 "\n" +
                 config.msg.footer
             );

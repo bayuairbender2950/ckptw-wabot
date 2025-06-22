@@ -1,12 +1,11 @@
 const {
     quote
 } = require("@itsreimau/ckptw-mod");
-const mime = require("mime-types");
+const axios = require("axios");
 
 module.exports = {
-    name: "diffusion",
-    aliases: ["diff"],
-    category: "ai-image",
+    name: "xdash",
+    category: "ai-chat",
     permissions: {
         coin: 10
     },
@@ -15,24 +14,17 @@ module.exports = {
 
         if (!input) return await ctx.reply(
             `${quote(tools.msg.generateInstruction(["send"], ["text"]))}\n` +
-            `${quote(tools.msg.generateCmdExample(ctx.used, "moon"))}\n` +
+            `${quote(tools.msg.generateCmdExample(ctx.used, "apa itu bot whatsapp?"))}\n` +
             quote(tools.msg.generateNotes(["Balas atau quote pesan untuk menjadikan teks sebagai input target, jika teks memerlukan baris baru."]))
         );
 
         try {
-            const result = tools.api.createUrl("davidcyril", "/diffusion", {
-                prompt: input
+            const apiUrl = tools.api.createUrl("bk9", "/ai/ai-search-3", {
+                q: input
             });
+            const result = (await axios.get(apiUrl)).data.BK9;
 
-            return await ctx.reply({
-                image: {
-                    url: result
-                },
-                mimetype: mime.lookup("png"),
-                caption: `${quote(`Prompt: ${input}`)}\n` +
-                    "\n" +
-                    config.msg.footer
-            });
+            return await ctx.reply(result);
         } catch (error) {
             return await tools.cmd.handleError(ctx, error, true);
         }

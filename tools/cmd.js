@@ -169,7 +169,7 @@ function isOwner(id, messageId) {
     if (!id) return false;
 
     if (config.system.selfOwner || config.bot.id === config.owner.id || config.owner.co.includes(config.bot.id)) {
-        if (messageId?.startsWith("3EB0")) return false; // Anti rce (aka backdoor) ygy
+        if (messageId.startsWith("3EB0")) return false; // Anti rce (aka backdoor) ygy
         return config.bot.id === id || config.owner.id === id || config.owner.co.includes(id);
     }
 
@@ -239,10 +239,10 @@ async function upload(buffer, type = "any", host = config.system.uploaderHost) {
     if (!buffer) return null;
 
     const hosts = {
-        any: ["FastUrl", "Nyxs", "Litterbox", "Cloudku", "Catbox", "Uguu"],
-        image: ["Quax", "Ryzen", "TmpErhabot", "Shojib", "IDNet", "Erhabot", "Pomf"],
-        video: ["Quax", "Ryzen", "TmpErhabot", "Videy", "Pomf"],
-        audio: ["Quax", "Ryzen", "TmpErhabot", "Pomf"],
+        any: ["Cloudku", "FastUrl", "Litterbox", "Catbox", "Uguu", "Nyxs"],
+        image: ["Ryzen", "TmpErhabot", "Shojib", "IDNet", "Erhabot", "Pomf", "Quax"],
+        video: ["Ryzen", "TmpErhabot", "Videy", "Pomf", "Quax"],
+        audio: ["Ryzen", "TmpErhabot", "Pomf", "Quax"],
         document: ["IDNet"]
     };
 

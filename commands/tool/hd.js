@@ -1,12 +1,11 @@
 const {
     quote
 } = require("@itsreimau/ckptw-mod");
-const axios = require("axios");
 const mime = require("mime-types");
 
 module.exports = {
     name: "hd",
-    aliases: ["hd", "hdr", "remini"],
+    aliases: ["hd", "hdr"],
     category: "tool",
     permissions: {
         coin: 10
@@ -23,10 +22,10 @@ module.exports = {
         try {
             const buffer = await ctx.msg.media.toBuffer() || await ctx.quoted.media.toBuffer();
             const uploadUrl = await tools.cmd.upload(buffer, "image");
-            const apiUrl = tools.api.createUrl("falcon", "/imagecreator/remini", {
-                url: uploadUrl
+            const result = tools.api.createUrl("siputzx", "/api/iloveimg/upscale", {
+                image: uploadUrl,
+                scale: "4"
             });
-            const result = (await axios.get(apiUrl)).data.result;
 
             return await ctx.reply({
                 image: {

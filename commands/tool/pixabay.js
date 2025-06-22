@@ -5,8 +5,7 @@ const axios = require("axios");
 const mime = require("mime-types");
 
 module.exports = {
-    name: "wikimedia",
-    aliases: ["wikim"],
+    name: "pixabay",
     category: "tool",
     permissions: {
         coin: 10
@@ -20,16 +19,16 @@ module.exports = {
         );
 
         try {
-            const apiUrl = tools.api.createUrl("archive", "/api/search/wikimedia", {
-                query: input
+            const apiUrl = tools.api.createUrl("bk9", "/search/pixabay", {
+                q: input
             });
-            const result = tools.cmd.getRandomElement((await axios.get(apiUrl)).data.result).image;
+            const result = tools.cmd.getRandomElement((await axios.get(apiUrl)).data.BK9);
 
             return await ctx.reply({
                 image: {
                     url: result
                 },
-                mimetype: mime.lookup("jpg"),
+                mimetype: mime.lookup("jpeg"),
                 caption: `${quote(`Kueri: ${input}`)}\n` +
                     "\n" +
                     config.msg.footer

@@ -8,9 +8,6 @@ const APIs = {
     bk9: {
         baseURL: "https://bk9.fun"
     },
-    davidcyril: {
-        baseURL: "https://apis.davidcyriltech.my.id"
-    },
     diibot: {
         baseURL: "https://api.diioffc.web.id"
     },
@@ -33,7 +30,7 @@ const APIs = {
         baseURL: "https://restapi-v2.simplebot.my.id"
     },
     zell: {
-        baseURL: "https://apizell.web.id"
+        baseURL: "https://zellapi.autos"
     }
 };
 
