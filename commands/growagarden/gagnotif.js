@@ -1,8 +1,10 @@
 const { quote } = require("@itsreimau/ckptw-mod");
 
+const validTypes = ["gear", "seed", "egg", "weather", "honey", "cosmetic", "all"];
+
 module.exports = {
-  name: "gagnotif",
-  aliases: ["gagnotify", "gagnotifikasi"],
+  name: "gagnotify",
+  aliases: ["notifgag", "gagnotifikasi"],
   category: "growagarden",
   permissions: {
     group: true,
@@ -22,20 +24,23 @@ module.exports = {
       return await ctx.reply(quote("✅ Notifikasi Grow a Garden dimatikan untuk grup ini!"));
     }
 
-    // Default: all jika tidak ada argumen
-    const validTypes = ["gear", "seed", "egg", "weather", "honey", "cosmetic", "all"];
-    let types = input ? input.split(",").map(t => t.trim()).filter(t => validTypes.includes(t)) : ["all"];
-    if (!types.length) types = ["all"];
+    // Jika "all", masukkan semua tipe satuan (bukan string "all" saja)
+    let types;
+    if (input === "all" || !input) {
+      types = validTypes.filter(t => t !== "all");
+    } else {
+      types = input.split(",").map(t => t.trim()).filter(t => validTypes.includes(t) && t !== "all");
+      if (!types.length) types = ["gear"];
+    }
 
     notifGroups[groupId] = types;
     await db.set("gag.notifGroups", notifGroups);
 
-    // Konfirmasi ke user
     return await ctx.reply(
       quote(
         `✅ Notifikasi Grow a Garden diaktifkan untuk grup ini!\n` +
         `Tipe: ${types.join(", ")}\n\n` +
-        `Contoh: .gagnotif gear,seed,egg,weather,honey,cosmetic,all\nMatikan: .gagnotif off`
+        `Contoh: .gagnotif gear,seed,egg,weather,honey,cosmetic\nMatikan: .gagnotif off`
       )
     );
   }

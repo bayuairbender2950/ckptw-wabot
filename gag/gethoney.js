@@ -1,41 +1,42 @@
 const https = require("https");
 const { sendGrowagardenNotif } = require("../events/handler");
 const { fetchStockLatest } = require("./getstock");
-
+const moment = require("moment-timezone");
 async function fetchHoneyJSON() {
   const stock = await fetchStockLatest();
+  const honey = Array.isArray(stock.eventshop_stock) ? stock.eventshop_stock : [];
   return {
-    honey: stock.honeyStock || [],
-    updatedAt: stock.timerCalculatedAt
+    honey,
+    updatedAt: Date.now()
   };
 }
 
 function getEmoji(name) {
-  const lower = name.toLowerCase();
-  if (lower.includes("honey")) return "🍯";
-  if (lower.includes("lavender")) return "💜";
-  if (lower.includes("flower")) return "🌸";
-  if (lower.includes("bee")) return "🐝";
-  if (lower.includes("sprinkler")) return "💧";
-  if (lower.includes("comb")) return "🍯";
-  if (lower.includes("chair")) return "🪑";
-  return "❓";
+  const lower = name.toLowerCase();
+  if (lower.includes("honey")) return "🍯";
+  if (lower.includes("lavender")) return "💜";
+  if (lower.includes("flower")) return "🌸";
+  if (lower.includes("bee")) return "🐝";
+  if (lower.includes("sprinkler")) return "💧";
+  if (lower.includes("comb")) return "🍯";
+  if (lower.includes("chair")) return "🪑";
+  return "❓";
 }
 
-function formatHoneyForWhatsapp(honey) {
-  function formatList(arr) {
-    return arr && arr.length
-      ? arr.map(item => `${getEmoji(item.name)} *${item.name}* x${item.value}`).join("\n")
-      : "-";
-  }
-  return [
-    "🍯 *Honey Stock*",
-    "",
-    "*Honey Items:*",
-    formatList(honey.honey),
-    "",
-    honey.updatedAt ? `*Updated:* ${new Date(honey.updatedAt).toLocaleString()}` : ""
-  ].filter(Boolean).join("\n").replace(/\n{3,}/g, "\n\n");
+function formatHoneyForWhatsapp(honeyData) {
+  function formatList(arr) {
+    return arr && arr.length
+      ? arr.map(item => `${getEmoji(item.display_name || item.name)} *${item.display_name || item.name}* x${item.quantity ?? item.value}`).join("\n")
+      : "-";
+  }
+  return [
+    "🍯 *Event Stock*",
+    "",
+    "*Items:*", 
+    formatList(honeyData.honey),
+    "",
+    honeyData.updatedAt ? `*Updated:* ${new Date(honeyData.updatedAt).toLocaleString('en-GB', { timeZone: 'Asia/Makassar' })} WITA` : ""
+  ].filter(Boolean).join("\n").replace(/\n{3,}/g, "\n\n");
 }
 
 async function updateHoney() {
