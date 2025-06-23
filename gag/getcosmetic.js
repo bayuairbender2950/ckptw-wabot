@@ -1,8 +1,6 @@
 const https = require("https");
 const { sendGrowagardenNotif } = require("../events/handler"); 
 const { fetchStockLatest } = require("./getstock");
-const moment = require("moment-timezone");
-const config = require("../config");
 
 async function fetchCosmeticJSON() {
   const stock = await fetchStockLatest();
@@ -13,38 +11,36 @@ async function fetchCosmeticJSON() {
   };
 }
 
-function getEmoji(name) {
-    const lower = name.toLowerCase();
-    if (lower.includes("crate")) return "📦";
-    if (lower.includes("sign")) return "🪧";
-    if (lower.includes("hammock")) return "🛏️";
-    if (lower.includes("table")) return "🪑";
-    if (lower.includes("umbrella")) return "⛱️";
-    if (lower.includes("tile")) return "🧱";
-    if (lower.includes("brick")) return "🧱";
-    if (lower.includes("fence")) return "🚧";
-    if (lower.includes("bookshelf")) return "📚";
-    return "🎀";
-  }
-  
-  function formatCosmeticForWhatsapp(cosmeticData) {
-    function formatList(arr) {
-      return arr && arr.length
-        ? arr.map(item => `${getEmoji(item.display_name || item.name)} *${item.display_name || item.name}* x${item.quantity ?? item.value}`).join("\n")
-        : "-";
-    }
-    return [
-      "🎀 *Cosmetic Stock*",
-      "",
-      "*Cosmetics:*",
-      formatList(cosmeticData.cosmetics),
-      "",
-      cosmeticData.updatedAt
-        ? `*Updated:* ${moment(cosmeticData.updatedAt).tz(config.timezone || "Asia/Makassar").format("YYYY-MM-DD HH:mm:ss")}`
-        : ""
-    ].filter(Boolean).join("\n").replace(/\n{3,}/g, "\n\n");
-  }
-  
+function emojiCosmetic(name) {
+  if (!name) return "🎀";
+  const lower = name.toLowerCase();
+  if (lower.includes("crate")) return "📦";
+  if (lower.includes("sign")) return "🪧";
+  if (lower.includes("hammock")) return "🛏️";
+  if (lower.includes("table")) return "🪑";
+  if (lower.includes("umbrella")) return "⛱️";
+  if (lower.includes("tile")) return "🧱";
+  if (lower.includes("brick")) return "🧱";
+  if (lower.includes("fence")) return "🚧";
+  if (lower.includes("bookshelf")) return "📚";
+  if (lower.includes("lantern")) return "🏮";
+  if (lower.includes("canopy")) return "🏕️";
+  if (lower.includes("compost")) return "🗑️";
+  return "🎀";
+}
+
+function formatCosmeticForWhatsapp(cosmeticData) {
+  const cosmetics = Array.isArray(cosmeticData.cosmetics) ? cosmeticData.cosmetics : [];
+  const cosmeticsSorted = [...cosmetics].sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
+  const msgCosmetic = cosmeticsSorted.map(item =>
+    `- ${emojiCosmetic(item.display_name)} ${item.display_name} x${item.quantity ?? item.value}`
+  ).join("\n");
+
+  return [
+    "🎀 Cosmetic Stock",
+    msgCosmetic
+  ].join("\n");
+}
 
 async function updateCosmetic() {
   try {

@@ -43,15 +43,64 @@ async function fetchWeatherJSON() {
   });
 }
 
+function getWeatherEmoji(weather) {
+  if (!weather || !weather.weather_id) return "";
+  const map = {
+    "beeswarm": "🐝",
+    "frost": "❄️",
+    "rain": "🌧️",
+    "thunderstorm": "⛈️",
+    "disco": "🪩",
+    "jandelstorm": "🌪️",
+    "blackhole": "🕳️",
+    "djjhai": "🎧",
+    "nightevent": "🌙",
+    "meteorshower": "☄️",
+    "sungod": "☀️",
+    "jandelfloat": "🪁",
+    "chocolaterain": "🍫",
+    "bloodmoonevent": "🌑",
+    "workingbeeswarm": "🐝",
+    "volcano": "🌋",
+    "alieninvasion": "👽",
+    "spacetravel": "🚀",
+    "summerharvest": "🌾",
+    "windy": "💨",
+    "heatwave": "🔥",
+    "tornado": "🌪️",
+    "gale": "🌬️"
+  };
+  return map[weather.weather_id] || "";
+}
+
 function formatWeatherForWhatsapp(weatherObj) {
   const weather = weatherObj.weather || {};
+  if (!weather.weather_name) return "Tidak ada weather yang aktif";
+  const emoji = getWeatherEmoji(weather);
+  // Duration
+  let duration = "-";
+  if (weather.duration) {
+    const min = Math.floor(weather.duration / 60);
+    duration = `${min} minute${min !== 1 ? "s" : ""}`;
+  }
+  // Ends in
+  let ends = "-";
+  if (weather.end_duration_unix && weather.end_duration_unix > 0) {
+    const now = Math.floor(Date.now() / 1000);
+    const diff = weather.end_duration_unix - now;
+    if (diff > 0) {
+      const min = Math.floor(diff / 60);
+      const sec = diff % 60;
+      ends = `in ${min} minute${min !== 1 ? "s" : ""}${min > 0 && sec > 0 ? ` ${sec} sec` : (min === 0 ? `${sec} sec` : "")}`;
+    } else {
+      ends = "ended";
+    }
+  }
   return [
-    "🌤️ *Weather*",
-    weather.icon
-      ? `*Status:* ${weather.weather_name || weather.weather_id || ""}`
-      : "Tidak ada weather yang aktif",
-    weatherObj.updatedAt ? `*Updated:* ${new Date(weatherObj.updatedAt).toLocaleString()}` : ""
-  ].filter(Boolean).join("\n");
+    `${emoji ? emoji + " " : ""}${weather.weather_name}`,
+    `Ends: ${ends}`,
+    `Duration: ${duration}`
+  ].join("\n");
 }
 
 async function updateWeather() {

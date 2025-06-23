@@ -1,10 +1,11 @@
 const { quote } = require("@itsreimau/ckptw-mod");
+const gagnotifdb = require("../../tools/gagnotifdb");
 
-const validTypes = ["gear", "seed", "egg", "weather", "honey", "cosmetic", "all"];
+const validTypes = ["gear", "seed", "egg", "weather", "honey", "cosmetic", "jandel", "all"];
 
 module.exports = {
-  name: "gagnotify",
-  aliases: ["notifgag", "gagnotifikasi"],
+  name: "gagnotif",
+  aliases: ["gagnotify", "notifgag", "gagnotifikasi"],
   category: "growagarden",
   permissions: {
     group: true,
@@ -14,13 +15,11 @@ module.exports = {
     const input = (ctx.args[0] || "").toLowerCase();
     const groupId = ctx.getId(ctx.id);
 
-    // Ambil dari DB, jika belum ada, inisialisasi objek kosong
-    let notifGroups = await db.get("gag.notifGroups");
-    if (!notifGroups || typeof notifGroups !== "object") notifGroups = {};
+    // Ambil dari file local gagnotifdb
+    let notifGroups = gagnotifdb.getAll();
 
     if (input === "off") {
-      delete notifGroups[groupId];
-      await db.set("gag.notifGroups", notifGroups);
+      gagnotifdb.remove(groupId);
       return await ctx.reply(quote("✅ Notifikasi Grow a Garden dimatikan untuk grup ini!"));
     }
 
@@ -33,14 +32,13 @@ module.exports = {
       if (!types.length) types = ["gear"];
     }
 
-    notifGroups[groupId] = types;
-    await db.set("gag.notifGroups", notifGroups);
+    gagnotifdb.set(groupId, types);
 
     return await ctx.reply(
       quote(
         `✅ Notifikasi Grow a Garden diaktifkan untuk grup ini!\n` +
         `Tipe: ${types.join(", ")}\n\n` +
-        `Contoh: .gagnotif gear,seed,egg,weather,honey,cosmetic\nMatikan: .gagnotif off`
+        `Contoh: .gagnotif gear,seed,egg,weather,honey,cosmetic,jandel\nMatikan: .gagnotif off`
       )
     );
   }

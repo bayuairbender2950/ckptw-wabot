@@ -48,7 +48,6 @@ function getEmojiFromLastSeen(name, lastSeenArr) {
 }
 
 
-// Fetch dari API baru JoshLei (realtime, 3 detik delay)
 async function fetchStockLatest() {
   return new Promise((resolve, reject) => {
     const options = {
@@ -83,40 +82,149 @@ async function fetchStockLatest() {
   });
 }
 
-// Format WhatsApp untuk API JoshLei
+function emojiSeed(name) {
+  if (!name) return "🌱";
+  const lower = name.toLowerCase();
+  if (lower.includes("watermelon")) return "🍉";
+  if (lower.includes("strawberry")) return "🍓";
+  if (lower.includes("green apple")) return "📦";
+  if (lower.includes("carrot")) return "🥕";
+  if (lower.includes("tomato")) return "🍅";
+  if (lower.includes("blueberry")) return "🫐";
+  return "🌱";
+}
+function emojiGear(name) {
+  if (!name) return "⚙️";
+  const lower = name.toLowerCase();
+  if (lower.includes("cleaning spray")) return "🧽";
+  if (lower.includes("trowel")) return "🔧";
+  if (lower.includes("watering can")) return "🚿";
+  if (lower.includes("recall wrench")) return "🔧";
+  if (lower.includes("favorite tool")) return "⭐";
+  if (lower.includes("harvest tool")) return "🛠️";
+  return "⚙️";
+}
+function emojiEgg(name) {
+  if (!name) return "🥚";
+  const lower = name.toLowerCase();
+  if (lower.includes("rare")) return "📦";
+  if (lower.includes("common")) return "🥚";
+  return "🥚";
+}
+function emojiCactus(name) {
+  if (!name) return "🌵";
+  const lower = name.toLowerCase();
+  if (lower.includes("cactus")) return "🌵";
+  if (lower.includes("honey")) return "🍯";
+  if (lower.includes("lavender")) return "💜";
+  if (lower.includes("flower")) return "🌸";
+  if (lower.includes("bee")) return "🐝";
+  if (lower.includes("sprinkler")) return "💧";
+  if (lower.includes("comb")) return "🍯";
+  if (lower.includes("chair")) return "🪑";
+  if (lower.includes("torch")) return "🔥";
+  if (lower.includes("nectarshade")) return "❓";
+  if (lower.includes("crate")) return "📦";
+  return "🌵";
+}
+
 function formatStockLatestForWhatsapp(stock) {
-  function formatList(arr) {
-    if (!Array.isArray(arr)) return "-";
-    if (arr.length === 0) return "-";
-    return arr.map(item => {
-      const emoji = getEmoji(item.display_name || item.name);
-      return `${emoji} *${item.display_name || item.name}* x${item.quantity ?? item.value ?? item.stock}`;
-    }).join("\n");
+  // Seeds
+  const seedStock = Array.isArray(stock.seed_stock) ? stock.seed_stock : [];
+  const seedMap = {};
+  for (const item of seedStock) {
+    const key = item.display_name || item.name;
+    if (!seedMap[key]) seedMap[key] = { ...item, quantity: 0 };
+    seedMap[key].quantity += item.quantity ?? item.value ?? 1;
   }
-  // Ambil waktu update dari salah satu item (pakai end_date_unix)
-  const updatedUnix = stock.seed_stock?.[0]?.end_date_unix || stock.gear_stock?.[0]?.end_date_unix || 0;
-  const updatedAt = updatedUnix ? new Date(updatedUnix * 1000) : new Date();
+  const seedsSorted = Object.values(seedMap).sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
+  const msgSeeds = seedsSorted.length
+    ? seedsSorted.map(item =>
+        `- ${emojiSeed(item.display_name)} ${item.display_name} x${item.quantity}`
+      ).join("\n")
+    : "-";
+
+  // Gear
+  const gearStock = Array.isArray(stock.gear_stock) ? stock.gear_stock : [];
+  const gearMap = {};
+  for (const item of gearStock) {
+    const key = item.display_name || item.name;
+    if (!gearMap[key]) gearMap[key] = { ...item, quantity: 0 };
+    gearMap[key].quantity += item.quantity ?? item.value ?? 1;
+  }
+  const gearSorted = Object.values(gearMap).sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
+  const msgGear = gearSorted.length
+    ? gearSorted.map(item =>
+        `- ${emojiGear(item.display_name)} ${item.display_name} x${item.quantity}`
+      ).join("\n")
+    : "-";
+
+  // Egg
+  const eggStock = Array.isArray(stock.egg_stock) ? stock.egg_stock : [];
+  const eggMap = {};
+  for (const item of eggStock) {
+    const key = item.display_name || item.name;
+    if (!eggMap[key]) eggMap[key] = { ...item, quantity: 0 };
+    eggMap[key].quantity += item.quantity ?? item.value ?? 1;
+  }
+  const msgEgg = Object.values(eggMap)
+    .map(item => `- ${emojiEgg(item.display_name)} ${item.display_name} x${item.quantity}`)
+    .join("\n");
+
+  // Cosmetic
+  const cosmeticStock = Array.isArray(stock.cosmetic_stock) ? stock.cosmetic_stock : [];
+  const cosmeticsSorted = [...cosmeticStock].sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
+  const msgCosmetic = cosmeticsSorted.length
+    ? cosmeticsSorted.map(item =>
+        `- 🎀 ${item.display_name} x${item.quantity ?? item.value}`
+      ).join("\n")
+    : "-";
+
+  // Cactus Event
+  let cactusStock = [];
+  if (Array.isArray(stock.cactus_event_stock) && stock.cactus_event_stock.length > 0) {
+    cactusStock = stock.cactus_event_stock;
+  } else if (Array.isArray(stock.eventshop_stock) && stock.eventshop_stock.length > 0) {
+    cactusStock = stock.eventshop_stock;
+  }
+  const cactusSorted = [...cactusStock].sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
+  const msgCactus = cactusSorted.length
+    ? cactusSorted.map(item =>
+        `- ${emojiCactus(item.display_name)} ${item.display_name} x${item.quantity ?? item.value}`
+      ).join("\n")
+    : "-";
+
+  const now = new Date();
+  now.setHours(now.getHours() + 7);
+  const hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+  const bulan = [
+    "Januari","Februari","Maret","April","Mei","Juni",
+    "Juli","Agustus","September","Oktober","November","Desember"
+  ];
+  const tanggal = `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
+  const waktu = now.toTimeString().split(" ")[0];
 
   return [
-    "🛠️ *Gear & Seeds*",
+    "🌱 GROW A GARDEN STOCK UPDATE 🌱",
     "",
-    "*Gear:*",
-    formatList(stock.gear_stock),
+    `📅 Tanggal: ${tanggal}`,
+    `⏰ Waktu: ${waktu} WIB`,
     "",
-    "*Seeds:*",
-    formatList(stock.seed_stock),
+    "🌱 Seeds Stock",
+    msgSeeds,
     "",
-    "*Eggs:*",
-    formatList(stock.egg_stock),
+    "⚙️ Gear Stock",
+    msgGear,
     "",
-    "*Event Shop:*",
-    formatList(stock.eventshop_stock),
+    "🥚 Egg Stock",
+    msgEgg,
     "",
-    "*Cosmetics:*",
-    formatList(stock.cosmetic_stock),
+    "🎀 Cosmetic Stock",
+    msgCosmetic,
     "",
-    updatedAt ? `*Updated:* ${updatedAt.toLocaleString()}` : ""
-  ].filter(Boolean).join("\n").replace(/\n{3,}/g, "\n\n");
+    "🌵 Cactus Event Stock",
+    msgCactus
+  ].join("\n");
 }
 
 function extractCounts(arr) {

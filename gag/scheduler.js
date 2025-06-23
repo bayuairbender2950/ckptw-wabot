@@ -6,37 +6,25 @@ const gethoney = require("./gethoney");
 const { sendGrowagardenNotif } = require("../events/handler");
 const moment = require("moment-timezone");
 const config = require("../config");
+const jandelnotif = require("./jandelnotif");
 
 let lastGearSeeds = null, lastWeather = null, lastEgg = null, lastCosmetic = null, lastHoney = null;
 let lastNotifSent = { gearSeeds: 0, weather: 0, egg: 0, cosmetic: 0, honey: 0 };
-let lastApiData = null;
-let lastApiRaw = "";
 
-setInterval(async () => {
+// Hapus cache polling, gunakan fetch langsung setiap polling
+// Hapus juga lastApiData, lastApiRaw, lastApiTime
+
+// Polling Gear & Seeds
+async function pollGearSeeds() {
   try {
     const stock = await getstock.fetchStockLatest();
     if (!stock) return;
-    const raw = JSON.stringify(stock);
-    if (raw !== lastApiRaw) {
-      console.log("[Scheduler] API Stok terdeteksi berubah. Memperbarui cache...");
-      lastApiData = stock;
-      lastApiRaw = raw;
-    }
-  } catch (e) {
-    console.error("GAG API fetch error:", e);
-  }
-}, 3000);
-
-async function pollGearSeeds() {
-  try {
-    const stock = lastApiData;
-    if (!stock) return;
 
     const currentGearAndSeeds = {
-        gear: stock.gear_stock || [],
-        seeds: stock.seed_stock || []
+      gear: stock.gear_stock || [],
+      seeds: stock.seed_stock || []
     };
-    
+
     let changed = !lastGearSeeds || JSON.stringify(lastGearSeeds) !== JSON.stringify(currentGearAndSeeds);
 
     if (changed && Date.now() - lastNotifSent.gearSeeds > 10000) {
@@ -48,9 +36,10 @@ async function pollGearSeeds() {
   } catch(e) { console.error("pollGearSeeds error:", e); }
 }
 
+// Polling Egg
 async function pollEgg() {
   try {
-    const stock = lastApiData;
+    const stock = await getstock.fetchStockLatest();
     if (!stock) return;
     const currentEggStock = stock.egg_stock || [];
     let changed = !lastEgg || JSON.stringify(lastEgg) !== JSON.stringify(currentEggStock);
@@ -66,9 +55,10 @@ async function pollEgg() {
   } catch (e) { console.error("pollEgg error:", e); }
 }
 
+// Polling Cosmetic
 async function pollCosmetic() {
   try {
-    const stock = lastApiData;
+    const stock = await getstock.fetchStockLatest();
     if (!stock) return;
     const currentCosmeticStock = stock.cosmetic_stock || [];
     let changed = !lastCosmetic || JSON.stringify(lastCosmetic) !== JSON.stringify(currentCosmeticStock);
@@ -84,9 +74,10 @@ async function pollCosmetic() {
   } catch (e) { console.error("pollCosmetic error:", e); }
 }
 
+// Polling Honey
 async function pollHoney() {
   try {
-    const stock = lastApiData;
+    const stock = await getstock.fetchStockLatest();
     if (!stock) return;
     const currentHoneyStock = stock.eventshop_stock || [];
     let changed = !lastHoney || JSON.stringify(lastHoney) !== JSON.stringify(currentHoneyStock);
@@ -102,21 +93,23 @@ async function pollHoney() {
   } catch (e) { console.error("pollHoney error:", e); }
 }
 
+// Polling Weather
 async function pollWeather() {
   try {
     const weatherData = await getweather.fetchWeatherJSON();
     if (!weatherData) return;
     const currentWeather = weatherData.weather || {};
     let changed = !lastWeather || JSON.stringify(lastWeather) !== JSON.stringify(currentWeather);
-    if (changed && currentWeather.weather_name && Date.now() - lastNotifSent.weather > 10000) {
-        console.log("Perubahan Cuaca terdeteksi, mengirim notifikasi...");
-        await sendGrowagardenNotif(getweather.formatWeatherForWhatsapp(weatherData), "weather");
-        lastNotifSent.weather = Date.now();
+    if (changed && (currentWeather.weather_name || Object.keys(currentWeather).length === 0) && Date.now() - lastNotifSent.weather > 10000) {
+      console.log("Perubahan Cuaca terdeteksi, mengirim notifikasi...");
+      await sendGrowagardenNotif(getweather.formatWeatherForWhatsapp(weatherData), "weather");
+      lastNotifSent.weather = Date.now();
     }
     lastWeather = currentWeather;
   } catch (e) { console.error("pollWeather error:", e); }
 }
 
+// Interval polling tetap, tapi semua fetch langsung ke API
 setInterval(async () => {
   const makassar = moment().tz(config.timezone || "Asia/Makassar");
   const minute = makassar.minute();
@@ -131,3 +124,11 @@ setInterval(async () => {
     await pollHoney();
   }
 }, 1000);
+
+setInterval(async () => {
+  try {
+    await jandelnotif.pollJandelNotif();
+  } catch (e) {
+    console.error("Jandel notif polling error:", e);
+  }
+}, 10000); // 10 detik

@@ -1,42 +1,42 @@
-const https = require("https");
 const { sendGrowagardenNotif } = require("../events/handler");
 const { fetchStockLatest } = require("./getstock");
-const moment = require("moment-timezone");
+
 async function fetchHoneyJSON() {
   const stock = await fetchStockLatest();
-  const honey = Array.isArray(stock.eventshop_stock) ? stock.eventshop_stock : [];
+  const honeyStock = Array.isArray(stock.eventshop_stock) ? stock.eventshop_stock : [];
   return {
-    honey,
+    honey: honeyStock,
     updatedAt: Date.now()
   };
 }
 
-function getEmoji(name) {
-  const lower = name.toLowerCase();
-  if (lower.includes("honey")) return "🍯";
-  if (lower.includes("lavender")) return "💜";
-  if (lower.includes("flower")) return "🌸";
-  if (lower.includes("bee")) return "🐝";
-  if (lower.includes("sprinkler")) return "💧";
-  if (lower.includes("comb")) return "🍯";
-  if (lower.includes("chair")) return "🪑";
-  return "❓";
+function emojiHoney(name) {
+  if (!name) return "🍯";
+  const lower = name.toLowerCase();
+  if (lower.includes("honey")) return "🍯";
+  if (lower.includes("lavender")) return "💜";
+  if (lower.includes("flower")) return "🌸";
+  if (lower.includes("bee")) return "🐝";
+  if (lower.includes("sprinkler")) return "💧";
+  if (lower.includes("comb")) return "🍯";
+  if (lower.includes("chair")) return "🪑";
+  if (lower.includes("torch")) return "🔥";
+  if (lower.includes("nectarshade")) return "❓";
+  if (lower.includes("crate")) return "📦";
+  return "🌵";
 }
 
 function formatHoneyForWhatsapp(honeyData) {
-  function formatList(arr) {
-    return arr && arr.length
-      ? arr.map(item => `${getEmoji(item.display_name || item.name)} *${item.display_name || item.name}* x${item.quantity ?? item.value}`).join("\n")
-      : "-";
-  }
-  return [
-    "🍯 *Event Stock*",
-    "",
-    "*Items:*", 
-    formatList(honeyData.honey),
-    "",
-    honeyData.updatedAt ? `*Updated:* ${new Date(honeyData.updatedAt).toLocaleString('en-GB', { timeZone: 'Asia/Makassar' })} WITA` : ""
-  ].filter(Boolean).join("\n").replace(/\n{3,}/g, "\n\n");
+  const honey = Array.isArray(honeyData.honey) ? honeyData.honey : [];
+  const honeySorted = [...honey].sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
+  const msgHoney = honeySorted.map(item =>
+    `- ${emojiHoney(item.display_name)} ${item.display_name} x${item.quantity ?? item.value}`
+  ).join("\n");
+
+  return [
+    "🌵 Cactus Event Stock",
+    msgHoney
+  ].join("\n");
 }
 
 async function updateHoney() {

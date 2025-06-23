@@ -7,6 +7,7 @@ const {
 } = require("@itsreimau/ckptw-mod");
 const axios = require("axios");
 const fs = require("node:fs");
+const gagnotifdb = require("../tools/gagnotifdb");
 
 // Fungsi untuk menangani event pengguna bergabung/keluar grup
 async function handleWelcome(bot, m, type, isSimulate = false) {
@@ -90,13 +91,12 @@ async function addWarning(ctx, groupDb, senderJid, groupId) {
 
 async function sendGrowagardenNotif(message, type = "all") {
   try {
-    const notifGroups = await db.get("gag.notifGroups") || {};
-    // Jika tidak ada grup yang aktif, jangan return, tetap lanjut
+    // Ambil dari file local gagnotifdb, bukan dari db bawaan
+    const notifGroups = gagnotifdb.getAll();
     const groupIds = Object.keys(notifGroups);
     if (groupIds.length === 0) return;
 
     for (const [groupJid, types] of Object.entries(notifGroups)) {
-      // Jika tipe "all" atau tipe yang diaktifkan grup cocok
       if (types.includes("all") || types.includes(type)) {
         await global.bot.core.sendMessage(`${groupJid}@g.us`, { text: message });
       }
