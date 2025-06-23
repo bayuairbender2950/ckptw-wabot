@@ -88,6 +88,24 @@ async function addWarning(ctx, groupDb, senderJid, groupId) {
     }
 }
 
+async function sendGrowagardenNotif(message, type = "all") {
+  try {
+    const notifGroups = await db.get("gag.notifGroups") || {};
+    // Jika tidak ada grup yang aktif, jangan return, tetap lanjut
+    const groupIds = Object.keys(notifGroups);
+    if (groupIds.length === 0) return;
+
+    for (const [groupJid, types] of Object.entries(notifGroups)) {
+      // Jika tipe "all" atau tipe yang diaktifkan grup cocok
+      if (types.includes("all") || types.includes(type)) {
+        await global.bot.core.sendMessage(`${groupJid}@g.us`, { text: message });
+      }
+    }
+  } catch (err) {
+    console.error("Gagal mengirim notifikasi Growagarden:", err);
+  }
+}
+
 // Events utama bot
 module.exports = (bot) => {
     bot.ev.setMaxListeners(config.system.maxListeners); // Tetapkan max listeners untuk events
@@ -116,6 +134,17 @@ module.exports = (bot) => {
             readyAt: bot.readyAt,
             groupLink: await bot.core.groupInviteCode(config.bot.groupJid).then(code => `https://chat.whatsapp.com/${code}`).catch(() => "https://chat.whatsapp.com/")
         };
+
+        // Tambahkan delay 5 detik sebelum menjalankan notifikasi GAG
+        setTimeout(async () => {
+            try {
+                const { updateStock, updateStockGearSeeds } = require("../gag/getstock");
+                await updateStock();
+                await updateStockGearSeeds();
+            } catch (e) {
+                console.error("Gagal mengirim notifikasi GAG saat bot ready:", e);
+            }
+        }, 5000);
     });
 
     // Event saat bot menerima pesan
@@ -372,5 +401,9 @@ module.exports = (bot) => {
     // Event saat pengguna bergabung atau keluar dari grup
     bot.ev.on(Events.UserJoin, async (m) => handleWelcome(bot, m, Events.UserJoin));
     bot.ev.on(Events.UserLeave, async (m) => handleWelcome(bot, m, Events.UserLeave));
+
+    // Simpan bot instance ke global agar bisa diakses dari luar
+    global.bot = bot;
 };
 module.exports.handleWelcome = handleWelcome; // Penanganan event pengguna bergabung/keluar grup
+module.exports.sendGrowagardenNotif = sendGrowagardenNotif; // Export fungsi notifikasi Growagarden

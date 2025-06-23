@@ -51,6 +51,9 @@ middleware(bot);
 const cmd = new CommandHandler(bot, path.resolve(__dirname, "commands"));
 cmd.load();
 
+// Tambahkan ini sebelum atau sesudah bot.launch()
+require("./gag/scheduler.js");
+
 module.exports = { bot };
 
 bot.launch().catch(error => consolefy.error(`Error: ${util.format(error)}`)); // Luncurkan bot
