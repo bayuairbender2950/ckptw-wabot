@@ -75,7 +75,6 @@ function getWeatherEmoji(weather) {
 
 function formatWeatherForWhatsapp(weatherObj) {
   const weather = weatherObj.weather || {};
-  if (!weather.weather_name) return "Tidak ada weather yang aktif";
   const emoji = getWeatherEmoji(weather);
   // Duration
   let duration = "-";

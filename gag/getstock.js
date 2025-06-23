@@ -194,6 +194,7 @@ function formatStockLatestForWhatsapp(stock) {
       ).join("\n")
     : "-";
 
+  // Tanggal WIB
   const now = new Date();
   now.setHours(now.getHours() + 7);
   const hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
